@@ -1,0 +1,549 @@
+<title>Broiler Poultry Production — Project Proposal</title>
+<style>
+  :root {
+    --paper: #f5f3ee;
+    --surface: #ffffff;
+    --ink: #201e19;
+    --ink-soft: #5a564c;
+    --ink-faint: #8c8577;
+    --accent: #2f5233;
+    --accent-strong: #23401f;
+    --accent-soft: #e7ede3;
+    --line: #ddd7c8;
+    --shadow: 0 1px 2px rgba(32, 30, 25, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #1c1a16;
+      --surface: #262319;
+      --ink: #eee9de;
+      --ink-soft: #b8b1a1;
+      --ink-faint: #837c6c;
+      --accent: #7fae7b;
+      --accent-strong: #9dc498;
+      --accent-soft: #2a3527;
+      --line: #3a362c;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #1c1a16;
+    --surface: #262319;
+    --ink: #eee9de;
+    --ink-soft: #b8b1a1;
+    --ink-faint: #837c6c;
+    --accent: #7fae7b;
+    --accent-strong: #9dc498;
+    --accent-soft: #2a3527;
+    --line: #3a362c;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  }
+  :root[data-theme="light"] {
+    --paper: #f5f3ee;
+    --surface: #ffffff;
+    --ink: #201e19;
+    --ink-soft: #5a564c;
+    --ink-faint: #8c8577;
+    --accent: #2f5233;
+    --accent-strong: #23401f;
+    --accent-soft: #e7ede3;
+    --line: #ddd7c8;
+    --shadow: 0 1px 2px rgba(32, 30, 25, 0.06);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Seravek", "Gill Sans Nova", "Gill Sans", "Segoe UI", Calibri, "Noto Sans", sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .sheet {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 0 4rem;
+  }
+
+  .masthead {
+    background: var(--accent);
+    color: #f4f1e6;
+    padding: 2.5rem 2.25rem 2.25rem;
+    margin-bottom: 2.5rem;
+  }
+  .masthead .eyebrow {
+    font-family: "Iowan Old Style", Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif;
+    font-style: italic;
+    font-size: 0.95rem;
+    letter-spacing: 0.04em;
+    opacity: 0.85;
+    margin: 0 0 0.35rem;
+  }
+  .masthead h1 {
+    font-family: "Iowan Old Style", Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif;
+    font-weight: 600;
+    font-size: 2.15rem;
+    line-height: 1.15;
+    margin: 0 0 0.9rem;
+    text-wrap: balance;
+  }
+  .masthead .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.5rem;
+    font-size: 0.88rem;
+    color: #dce4d9;
+    border-top: 1px solid rgba(244, 241, 230, 0.25);
+    padding-top: 0.9rem;
+  }
+  .masthead .meta strong { color: #f4f1e6; font-weight: 600; }
+
+  .content { padding: 0 2.25rem; }
+
+  section { margin-bottom: 2.4rem; }
+
+  .section-label {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    margin-bottom: 0.9rem;
+  }
+  .section-label .num {
+    font-family: "Iowan Old Style", Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif;
+    font-size: 0.85rem;
+    color: var(--accent);
+    letter-spacing: 0.06em;
+  }
+  h2 {
+    font-family: "Iowan Old Style", Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif;
+    font-weight: 600;
+    font-size: 1.3rem;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--ink);
+    text-wrap: balance;
+  }
+  .rule {
+    height: 2px;
+    background: var(--line);
+    border: none;
+    margin: 0 0 1.1rem;
+  }
+  .rule.accent { background: var(--accent); width: 3rem; height: 2px; margin: -0.6rem 0 1.1rem; }
+
+  p { margin: 0 0 0.9rem; max-width: 66ch; color: var(--ink); }
+  p.soft { color: var(--ink-soft); }
+  .fill { color: var(--ink-faint); font-style: italic; }
+
+  ul, ol { margin: 0 0 0.9rem; padding-left: 1.3rem; max-width: 64ch; }
+  li { margin-bottom: 0.4rem; }
+
+  .field-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.9rem 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 1.25rem 1.4rem;
+    box-shadow: var(--shadow);
+  }
+  .field { display: flex; flex-direction: column; gap: 0.2rem; }
+  .field.full { grid-column: 1 / -1; }
+  .field label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--ink-faint);
+  }
+  .field .val {
+    font-size: 0.98rem;
+    color: var(--ink-faint);
+    font-style: italic;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 0.3rem;
+  }
+  .field .val.confirmed {
+    color: var(--ink);
+    font-style: normal;
+    font-weight: 600;
+  }
+
+  .table-wrap { overflow-x: auto; border-radius: 6px; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    font-size: 0.92rem;
+    box-shadow: var(--shadow);
+  }
+  caption {
+    text-align: left;
+    font-size: 0.8rem;
+    color: var(--ink-faint);
+    margin-bottom: 0.5rem;
+    caption-side: top;
+  }
+  th, td {
+    text-align: left;
+    padding: 0.62rem 0.85rem;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  thead th {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-soft);
+    background: var(--accent-soft);
+    border-bottom: 1px solid var(--line);
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  .num-cell, .money {
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", Consolas, monospace;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    white-space: nowrap;
+  }
+  tr.total td {
+    background: var(--accent-soft);
+    font-weight: 700;
+    border-top: 2px solid var(--accent);
+  }
+  tr.total .money { color: var(--accent-strong); }
+
+  .callout {
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    padding: 0.9rem 1.1rem;
+    border-radius: 0 6px 6px 0;
+    font-size: 0.93rem;
+    color: var(--ink);
+    margin-bottom: 1.1rem;
+  }
+  .callout strong { color: var(--accent-strong); }
+
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin: 1.1rem 0;
+  }
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 0.9rem 1rem;
+    box-shadow: var(--shadow);
+  }
+  .stat .label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-faint);
+    margin-bottom: 0.3rem;
+  }
+  .stat .value {
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", Consolas, monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--accent-strong);
+  }
+
+  .sig-block {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line);
+  }
+  .sig-line {
+    border-bottom: 1px solid var(--ink-faint);
+    height: 2.2rem;
+    margin-bottom: 0.4rem;
+  }
+  .sig-block .label { font-size: 0.8rem; color: var(--ink-soft); }
+
+  .print-note {
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    margin-top: 2.5rem;
+  }
+
+  @media (max-width: 640px) {
+    .field-grid { grid-template-columns: 1fr; }
+    .stat-row { grid-template-columns: 1fr; }
+    .sig-block { grid-template-columns: 1fr; }
+    .masthead { padding: 2rem 1.4rem; }
+    .content { padding: 0 1.4rem; }
+  }
+
+  @media print {
+    :root {
+      --paper: #ffffff; --surface: #ffffff; --ink: #201e19; --ink-soft: #4a4738;
+      --ink-faint: #6b6656; --accent: #2f5233; --accent-strong: #23401f;
+      --accent-soft: #eef2ea; --line: #cfc9b8; --shadow: none;
+    }
+    body { font-size: 12.5pt; }
+    .masthead { color: #f4f1e6; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .print-note { display: none; }
+    section { break-inside: avoid; }
+    table { break-inside: auto; }
+    tr { break-inside: avoid; }
+  }
+</style>
+
+<div class="sheet">
+  <div class="masthead">
+    <p class="eyebrow">Project Proposal — Youth Loan Application</p>
+    <h1>Broiler Poultry Production Enterprise</h1>
+    <div class="meta">
+      <span>Presented via the office of <strong>Hon. Discent Collins Bajila, MP</strong></span>
+      <span>Venue: <strong>Luveve Youth Centre</strong></span>
+      <span>Date: <strong>12 August 2026, 09:30</strong></span>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <section>
+      <div class="field-grid">
+        <div class="field"><label>Full Name</label><span class="val confirmed">Bhekimpilo Nyoni</span></div>
+        <div class="field"><label>National ID Number</label><span class="val fill">ID number</span></div>
+        <div class="field"><label>Physical Address / Ward</label><span class="val confirmed">6658 Gwabalanda, PO Luveve, Bulawayo</span></div>
+        <div class="field"><label>Phone Number</label><span class="val fill">Phone number</span></div>
+        <div class="field full"><label>Business Name</label><span class="val confirmed">Nyoni Poultry Enterprise</span></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-label"><span class="num">01</span><h2>Executive Summary</h2></div>
+      <hr class="rule accent" />
+      <p>This proposal seeks funding to start a small-scale broiler chicken production business,
+      beginning with a first batch of <strong>100 day-old broiler chicks</strong>. Broiler
+      production was chosen because it has a short production cycle (6&ndash;8 weeks from chick to
+      sale), strong and steady local demand for chicken meat, and a proven, well-understood
+      process a first-time farmer can manage successfully with basic guidance.</p>
+      <div class="stat-row">
+        <div class="stat"><div class="label">Capital requested</div><div class="value">$464</div></div>
+        <div class="stat"><div class="label">Production cycle</div><div class="value">6&ndash;8 wks</div></div>
+        <div class="stat"><div class="label">Projected revenue</div><div class="value">$630</div></div>
+      </div>
+      <p class="soft">Figures shown are the estimate used throughout this proposal — see Section 06
+      for the full itemized budget and the note on replacing estimates with real supplier
+      quotations.</p>
+    </section>
+
+    <section>
+      <div class="section-label"><span class="num">02</span><h2>About the Applicant</h2></div>
+      <hr class="rule accent" />
+      <p>I am a young resident of Luveve who has always been drawn to poultry farming as a
+      realistic way to build my own income rather than wait indefinitely for formal employment. I
+      already have a small structure at home that can house between 50 and 100 chicks, which I set
+      up myself with limited resources — this loan will let me extend that structure and add
+      separate compartments so I can rotate batches, keeping incoming day-old chicks apart from an
+      older, near-market-ready batch. That way I can sell one batch and start the next immediately,
+      without any downtime and without risking young chicks by mixing them with older birds.
+      Poultry farming appeals to me because the short production cycle means I can see real results
+      and start repaying quickly, and because it lets me serve my own community directly —
+      supplying fresh, affordable chicken to my neighbours here in Luveve. My family also has a
+      rural home about 60km from Bulawayo, which gives me a natural second site to expand
+      production and sales to once the Luveve operation is established, and I plan to use solar
+      power to run the project reliably at both sites without depending on an unstable grid supply.
+      As the business grows, I also want to create an opportunity to bring other young people from
+      the area on board.</p>
+    </section>
+
+    <section>
+      <div class="section-label"><span class="num">03</span><h2>Business Description</h2></div>
+      <hr class="rule accent" />
+      <p><strong>Nature of business:</strong> small-scale commercial broiler production for sale of
+      live birds to local households, vendors, and butcheries.</p>
+      <p><strong>Objectives:</strong></p>
+      <ol>
+        <li>Successfully raise and sell the first batch of 100 broilers within 8 weeks of
+        receiving chicks.</li>
+        <li>Use profit from the first batch to part-repay the loan and fund a second, larger batch
+        (150&ndash;200 birds) within 3 months.</li>
+        <li>Establish a reliable local customer base within the first two production cycles.</li>
+        <li>Grow into a stable enterprise providing significant income within 12 months.</li>
+        <li>Expand production to a family rural home approximately 60km from Bulawayo as a second
+        site, once the Luveve operation is established, opening a second market and spreading
+        production across two locations.</li>
+      </ol>
+      <p class="soft">Broilers were chosen over layers or crop farming specifically because the
+      short cycle means faster loan repayment, and chicken meat demand is consistent year-round —
+      not seasonal.</p>
+    </section>
+
+    <section>
+      <div class="section-label"><span class="num">04</span><h2>Market Analysis</h2></div>
+      <hr class="rule accent" />
+      <p><strong>Target customers:</strong> households in the local area buying live birds
+      directly, local vendors/tuck-shops, at least one local butchery approached once volumes
+      grow, and a second customer base at the family's rural home approximately 60km from
+      Bulawayo once operations expand to that site (Section 03, Objective 5).</p>
+      <p><strong>Demand:</strong> chicken is the most affordable, widely consumed meat in
+      Zimbabwe. Local demand in high-density suburbs consistently outstrips small-scale supply —
+      birds are typically pre-ordered by word of mouth before reaching maturity.</p>
+      <p><strong>Pricing:</strong> live broilers currently sell locally at approximately
+      <strong>US$6&ndash;8 per bird</strong>. This proposal uses a conservative <strong>US$7 per
+      bird</strong> throughout.</p>
+    </section>
+
+    <section>
+      <div class="section-label"><span class="num">05</span><h2>Operations Plan</h2></div>
+      <hr class="rule accent" />
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Week</th><th>Activity</th></tr></thead>
+          <tbody>
+            <tr><td>0</td><td>Receive 100 day-old chicks; brooding house pre-warmed and ready</td></tr>
+            <tr><td>1&ndash;2</td><td>Brooding — heat lamp maintained, starter mash, first vaccinations (Newcastle disease, Gumboro)</td></tr>
+            <tr><td>3&ndash;5</td><td>Grower stage — grower mash, reduced heating, regular health checks</td></tr>
+            <tr><td>6&ndash;8</td><td>Finisher stage — finisher mash, birds reach market weight (1.8&ndash;2.2kg)</td></tr>
+            <tr><td>8</td><td>Sale of birds; house cleaned, rested, and disinfected before next batch</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin-top:1rem"><strong>Housing:</strong> An existing small structure at the
+      applicant's home, currently sized for 50&ndash;100 chicks, will be <strong>extended and
+      divided into two compartments</strong> — one for an incoming batch of day-old chicks, one for
+      the current batch as it grows toward market weight. This rotation design means a new batch
+      can start the moment the previous one is sold, without a gap in production and without
+      mixing different-age birds (which raises disease risk).</p>
+      <p><strong>Power supply:</strong> solar power will be used to run the brooding heat lamp and
+      lighting, keeping the project running reliably during grid outages/load-shedding — brooding
+      chicks are especially vulnerable to losing heat overnight, so this removes a real risk to the
+      whole batch. The same solar setup is intended to support the rural home site once operations
+      expand there.</p>
+      <p class="soft"><strong>Biosecurity:</strong> vaccination schedule followed per supplier/
+      extension officer guidance; footbath at house entrance; visitors limited during brooding;
+      sick birds isolated immediately.</p>
+    </section>
+
+    <section>
+      <div class="section-label"><span class="num">06</span><h2>Startup Budget — First Batch</h2></div>
+      <hr class="rule accent" />
+      <div class="callout">
+        <strong>Before the meeting:</strong> figures below are realistic local estimates. Bring
+        actual written quotations from a stockfeeds supplier, hatchery, and hardware store (item 6
+        on the loan requirements) and update this table with the real numbers.
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Item</th><th>Qty</th><th class="num-cell">Unit</th><th class="num-cell">Total</th></tr></thead>
+          <tbody>
+            <tr><td>Day-old broiler chicks</td><td>100</td><td class="num-cell">$0.60</td><td class="num-cell money">$60.00</td></tr>
+            <tr><td>Starter mash (50kg)</td><td>2 bags</td><td class="num-cell">$18.00</td><td class="num-cell money">$36.00</td></tr>
+            <tr><td>Grower mash (50kg)</td><td>3 bags</td><td class="num-cell">$17.00</td><td class="num-cell money">$51.00</td></tr>
+            <tr><td>Finisher mash (50kg)</td><td>3 bags</td><td class="num-cell">$16.00</td><td class="num-cell money">$48.00</td></tr>
+            <tr><td>Vaccines (Newcastle + Gumboro)</td><td>1 course</td><td class="num-cell">$15.00</td><td class="num-cell money">$15.00</td></tr>
+            <tr><td>Vitamins / electrolytes</td><td>1 course</td><td class="num-cell">$10.00</td><td class="num-cell money">$10.00</td></tr>
+            <tr><td>Feeders</td><td>5</td><td class="num-cell">$8.00</td><td class="num-cell money">$40.00</td></tr>
+            <tr><td>Drinkers</td><td>5</td><td class="num-cell">$6.00</td><td class="num-cell money">$30.00</td></tr>
+            <tr><td>Heat lamp + fitting</td><td>2</td><td class="num-cell">$12.00</td><td class="num-cell money">$24.00</td></tr>
+            <tr><td>Wood-shaving litter</td><td>4 bags</td><td class="num-cell">$5.00</td><td class="num-cell money">$20.00</td></tr>
+            <tr><td>Structure extension + compartment dividers <span class="soft">(wire mesh, poles, roofing offcuts)</span></td><td>1 set</td><td class="num-cell">$110.00</td><td class="num-cell money">$110.00</td></tr>
+            <tr><td>Transport</td><td>&mdash;</td><td class="num-cell">&mdash;</td><td class="num-cell money">$20.00</td></tr>
+            <tr class="total"><td colspan="3">Total estimated capital required</td><td class="num-cell money">$464.00</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="soft" style="margin-top:0.9rem">The existing structure already covers the base
+      shelter — this budget only funds extending it and adding the two-compartment divider
+      described in Section 05, which is why the housing line is lower than a full build from
+      scratch would be.</p>
+    </section>
+
+    <section>
+      <div class="section-label"><span class="num">07</span><h2>Revenue Projection — First Batch</h2></div>
+      <hr class="rule accent" />
+      <div class="table-wrap">
+        <table>
+          <tbody>
+            <tr><td>Chicks purchased</td><td class="num-cell money">100</td></tr>
+            <tr><td>Expected survival rate</td><td class="num-cell money">90%</td></tr>
+            <tr><td>Birds available for sale</td><td class="num-cell money">90</td></tr>
+            <tr><td>Average selling price / bird</td><td class="num-cell money">$7.00</td></tr>
+            <tr><td><strong>Total projected revenue</strong></td><td class="num-cell money"><strong>$630.00</strong></td></tr>
+            <tr><td>Less: total production cost</td><td class="num-cell money">$464.00</td></tr>
+            <tr class="total"><td>Projected net profit, first batch</td><td class="num-cell money">&asymp; $166.00</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="soft" style="margin-top:0.9rem">Profit is modest on the first batch because it also
+      covers the one-off structure extension and equipment costs reused for every future batch at
+      no extra cost. <strong>From the second batch onward</strong>, with the compartments and
+      equipment already in place, the same 100-bird cycle costs roughly <strong>$260</strong>
+      (chicks, feed, vaccines, vitamins, litter, transport only) against the same ~$630 revenue —
+      a projected profit of <strong>&asymp; $370 per cycle</strong>. Because the compartment design
+      lets a fresh batch start the moment the current one is sold, this profit is realistically
+      earned roughly every 8 weeks on an ongoing basis, not just once.</p>
+    </section>
+
+    <section>
+      <div class="section-label"><span class="num">08</span><h2>Loan Repayment Plan</h2></div>
+      <hr class="rule accent" />
+      <ul>
+        <li><strong>Loan amount requested:</strong> $464.00 (see Section 06), adjusted once real supplier quotations are confirmed</li>
+        <li><strong>Source of repayment:</strong> proceeds from the sale of the first batch of broilers</li>
+        <li><strong>Proposed terms:</strong> <span class="fill">insert once known from loan officers at the meeting</span></li>
+        <li><strong>Commitment:</strong> proceeds from the first batch prioritize loan repayment before any reinvestment into a second batch</li>
+      </ul>
+    </section>
+
+    <section>
+      <div class="section-label"><span class="num">09</span><h2>Risks &amp; Mitigation</h2></div>
+      <hr class="rule accent" />
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Risk</th><th>Mitigation</th></tr></thead>
+          <tbody>
+            <tr><td>Disease outbreak</td><td>Strict vaccination schedule, biosecurity measures, guidance from local extension officer</td></tr>
+            <tr><td>High mortality in brooding</td><td>Reliable heat source, reputable hatchery, close monitoring in first two weeks</td></tr>
+            <tr><td>Feed price increases</td><td>Compare prices across at least two local suppliers before purchase</td></tr>
+            <tr><td>Slow sales</td><td>Pre-orders from household contacts before birds reach maturity</td></tr>
+            <tr><td>Theft / predators</td><td>Secure fencing, lockable structure, checked daily</td></tr>
+            <tr><td>Water shortage</td><td class="fill">confirm applicant's water access and backup plan</td></tr>
+            <tr><td>Power outages / load-shedding</td><td>Solar power used for the brooding heat lamp and lighting, reducing dependence on an unstable grid supply</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-label"><span class="num">10</span><h2>Conclusion</h2></div>
+      <hr class="rule accent" />
+      <p>This proposal outlines a realistic, low-risk first step into commercial poultry farming,
+      matched to the scale of support available through the Youth Loan scheme. The short
+      production cycle means the loan can be repaid quickly from real sales, and the equipment and
+      skills built up from this first batch create a foundation for a larger, self-sustaining
+      business — turning a modest first loan into a real source of income.</p>
+    </section>
+
+    <div class="sig-block">
+      <div>
+        <div class="sig-line"></div>
+        <div class="label">Applicant signature &amp; date</div>
+      </div>
+      <div>
+        <div class="sig-line"></div>
+        <div class="label">Witness / MP office representative</div>
+      </div>
+    </div>
+
+    <p class="print-note">Fill in the italicised fields, replace budget estimates with real
+    supplier quotations, then print this page for the 12 August meeting.</p>
+  </div>
+</div>
