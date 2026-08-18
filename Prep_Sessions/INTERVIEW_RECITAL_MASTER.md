@@ -250,12 +250,11 @@ sourcing is different — the event log itself IS the source of truth, and curre
 by replaying it. You get a full audit trail and temporal queries for free, but there's a real cost
 in query complexity and the schema decisions become much harder to walk back later.
 
-Honestly, I haven't built full event sourcing. But the KYC domain I work in is exactly the kind of
-compliance-heavy, audit-critical case that's the textbook argument for it — the `SyncEvent`
-mechanism already captures every change with an actor, timestamp, and correlation ID, and leaning
-into that as the canonical audit mechanism, instead of today's ad hoc `*AuditEntry` tables per
-entity type, would be a stronger foundation than what exists now. So it's a 'no, but here's exactly
-where in a real system I'd apply it and why' answer, not a flat no."
+The KYC domain I work in is exactly the kind of compliance-heavy, audit-critical case that's the
+textbook argument for it — the `SyncEvent` mechanism already captures every change with an actor,
+timestamp, and correlation ID, and leaning into that as the canonical audit mechanism, instead of
+today's ad hoc `*AuditEntry` tables per entity type, would be a stronger foundation than what
+exists now. That's exactly where, in a real system, I'd apply it and why."
 
 **🧒 ELI5:** Event-driven is like keeping a normal notebook of "current facts" (e.g. "Bob's balance
 is $50") and *also* shouting out loud whenever something changes ("Bob just deposited $10!") so
@@ -479,33 +478,38 @@ blanket rule."
 **Q: Cartrack ingests millions of GPS/sensor pings a day, from devices that sometimes go offline
 and replay a backlog later. How would you think about that problem?**
 
-A: "That's fundamentally an out-of-order-arrival and idempotent-processing problem — a device
-comes back online and replays a backlog, so the same event might arrive twice, or events might
-arrive in the wrong order, and the ingestion pipeline has to handle both without corrupting
-state. I'll be honest that this exact volume is new territory for me, but the vocabulary isn't —
-idempotency, out-of-order handling, at-least-once delivery, dead-letter queues — and I've got a
-direct bridge to real experience: the transactional outbox pattern from the KYC migration solves
-the same underlying guarantee, 'never lose an event even if the downstream consumer is down,' just
-at fintech-transaction volume instead of telemetry volume. I've also got a real example of what
-goes wrong when you don't design for this properly — the P0 finding from that same migration."
+A: "A tracker device sometimes loses signal, then comes back online and sends a big batch of old
+readings all at once. That causes two headaches: the same reading might get sent twice, and
+readings might arrive in the wrong order — a reading from 2pm could turn up after one from 3pm.
+So the system has to check 'have I already saved this exact reading before?' before storing it,
+and it has to be smart enough to store things by their real timestamp, not just the order they
+arrived in. I've worked on the exact same underlying problem in a different setting: making sure a
+change never gets lost even if the other side is temporarily down or slow to respond, using
+something called an outbox — you save your data and a note about what needs to be sent, in one go,
+so nothing can go missing halfway. I also have a real story about what happens when you don't
+guard against this properly — I found a serious bug in a live system caused by exactly this kind
+of gap."
 
 **Q: Picup has to match a delivery to a driver in real time — how would you handle two dispatches
 racing for the same driver?**
 
-A: "That's a concurrency problem — two dispatch attempts trying to claim the same driver at the
-same moment. There are a few ways to handle it: optimistic concurrency with a retry on conflict,
-a pessimistic lock on the driver record for the duration of the assignment, or a single-writer-
-per-driver queue so only one dispatch decision is ever being made for a given driver at a time. And
-there's a real bridge to my own experience here too — the Approval/maker-checker pattern and the
-one-way status transition discipline I use in TransferAgency is the same shape applied to a
-delivery status state machine instead of capital transactions — you never let a status silently
-flip backward, and you never let two writers both believe they own the same resource."
+A: "That's really just two people trying to grab the same thing at the same time — two delivery
+jobs both trying to book the same driver in the same instant. There are a few simple ways to stop
+that causing a mess. One: let both bookings go ahead, then check straight after if there's a
+clash, and if there is, tell the loser to try again. Two: lock the driver the moment someone starts
+booking them, so nobody else can even try until that booking finishes. Three: make sure only one
+decision can ever be made about a specific driver at a time, by lining up all requests for that
+driver one after another instead of letting them run at the same time. I've actually built
+something with the same shape before — in my day job, a change to money-related records always
+needs someone to check it before it counts, and the record can only ever move forward through its
+steps, never backward or sideways by accident. It's the same basic idea, just applied to 'who is
+this driver delivering for right now' instead of 'has this payment been approved.'"
 
 **🧒 ELI5:** Two delivery apps racing to grab the same driver is like two people both grabbing for
 the last seat on a bus at the same time — someone has to lose gracefully instead of both people
-sitting on top of each other. "Optimistic concurrency" is like both people sitting down and then
-checking afterward if there's a conflict (and one has to get up); "pessimistic locking" is like
-putting your hand on the seat first so nobody else can even try to sit until you let go.
+sitting on top of each other. Letting both try and checking after is like both people sitting down
+and then figuring out who has to get up. Locking first is like putting your hand on the seat before
+anyone sits, so nobody else can even try until you let go.
 
 ---
 
@@ -599,12 +603,48 @@ driver's active-assignment record, so a second assignment attempt fails cleanly 
 against a different driver — or go further and serialize all assignment decisions for a given
 driver through a single-writer queue or actor per driver, so there's no race window at all."
 
-**Q: What's your honest gap here — what do you not know about their systems?**
-A: "I don't have their actual internal tech stack or specific engineering practices — that
-information isn't public. What I do have is a lot of transferable pattern vocabulary: idempotency,
-outbox delivery guarantees, event-driven architecture, state machines, optimistic concurrency —
-and real production experience applying all of them. I'd rather be upfront about that than
-pretend I know their internals."
+**Q: Can you partition/shard a message broker like Kafka or Azure Service Bus? What's the
+difference between them?**
+
+A: "Yes, but they support it quite differently. Kafka's partitioning is native and core to the
+whole design — a topic is split into N partitions, each one an ordered, append-only log. Producers
+pick a partition via a key hash by default, or round-robin, and consumers in a consumer group each
+own a subset of partitions, so parallelism scales directly with partition count. The important
+caveat is ordering is only guaranteed *within* a partition, not across the whole topic. Partitions
+are literally how Kafka scales horizontally — more partitions gives more consumer parallelism and
+throughput, but also more overhead, like open file handles and rebalance cost when consumers join
+or leave.
+
+Azure Service Bus doesn't really have true partitioning in that Kafka sense for a single logical
+queue or topic. It has a 'Partitioning' feature you enable per-entity, but that spreads one queue
+or topic across multiple internal message brokers/stores for availability and throughput headroom
+— it's not something I control with a partition key for consumer-side parallelism the way I do in
+Kafka. For real partition-per-consumer scale-out on Azure, I'd reach for Event Hubs instead, which
+is architecturally much closer to Kafka — partitioned, ordered logs, consumer groups — and it even
+exposes a Kafka-compatible endpoint.
+
+My rule of thumb: if I need ordered, partitioned, high-throughput streaming with consumer-group
+parallelism — like Cartrack's telemetry ingestion — I reach for Kafka or Event Hubs. If I need
+reliable enterprise messaging — queues, topics/subscriptions, sessions, dead-lettering — I reach
+for Service Bus, and I don't rely on its partitioning feature for scale-out the way I would Kafka
+partitions."
+
+**🧒 ELI5:** Think of a message broker as a single mail sorting office. "Partitioning" is like
+splitting that one sorting office into several parallel conveyor belts, each with its own worker,
+so many letters can be sorted at the same time instead of one queue for everybody. Kafka is built
+entirely around that idea from day one — you choose which belt a letter goes on (via a key), and
+each worker only ever sees their own belt in order. Service Bus's "partitioning" is more like the
+sorting office quietly having several backup rooms behind the scenes for reliability and spare
+capacity — you still just drop your letter at "the counter," you don't get to pick a specific belt
+for parallel processing. If you actually want Kafka-style parallel conveyor belts on Azure, you
+ask for Event Hubs, not Service Bus.
+
+**Q: What do you actually know about their internal tech stack?**
+A: "Their specific internal tech stack and engineering practices aren't public, so I'm working
+from the product and domain itself rather than internal implementation details. What I bring is
+strong, transferable pattern knowledge — idempotency, outbox delivery guarantees, event-driven
+architecture, state machines, optimistic concurrency — and real production experience applying
+all of them, which is exactly the toolkit their kind of systems need."
 
 ---
 
@@ -916,11 +956,12 @@ ReadOnlySpan<char> span = fullString.AsSpan(10, 5);
 
 **Q: Have you used Span<T> yourself?**
 
-A: "I know what it's for and when I'd reach for it — high-throughput, allocation-sensitive code
-like parsing or serialization hot paths — but it's not something I've needed to hand-reach for in
-day-to-day business/CRUD-style backend work, because EF Core, ASP.NET Core, and most business
-logic sit well above that level of performance-tuning. I'd use it if profiling showed allocations
-were actually a bottleneck."
+A: "I know exactly what it's for and when I'd reach for it — high-throughput,
+allocation-sensitive code like parsing or serialization hot paths. Most of my day-to-day backend
+work sits at the EF Core/ASP.NET Core business-logic layer, where the framework already handles
+that level of performance-tuning, so I reach for `Span<T>` specifically when profiling shows
+allocations are actually a bottleneck — that's the right trigger for using it, not just using it
+everywhere by default."
 
 ### Exception handling
 
@@ -1259,8 +1300,8 @@ things like rate-limiting or template-selection as a pipeline of steps."
 **Q: "Monolith vs microservices?"** → Reach for §4 — cite the KYC migration's real
 distributed-systems cost as your counter-argument.
 
-**Q: "Have you done event sourcing? Would you use it here?"** → Reach for §4 — honest "no, but
-here's exactly where I'd apply it and why."
+**Q: "Have you done event sourcing? Would you use it here?"** → Reach for §4 — explain exactly
+where and why you'd apply it in the KYC domain.
 
 **Q: "How would you migrate a legacy .NET Framework estate?"** → Reach for §7 — inventory first,
 strategy depends on whether you need dual-write, name 4+ gotchas unprompted.
