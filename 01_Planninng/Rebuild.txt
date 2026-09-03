@@ -1,0 +1,22 @@
+What Do We want To Rebuild?
+How are we going to do it?
+
+
+How Many Journeys are in the system?
+State Them
+What KInd of Information to they each handle
+What are their Roles and Permissions.
+What is the already system doing and doing well?
+What needs to be built to make it better.
+What other Features need to be built.
+
+CLIENT ONBOARDING
+ONGOING MONITORING
+KYC
+MKYC
+TAX
+CLIENT DASHBOARD
+KYC DASHBOARD
+TASKS
+
+- How are the above linked.
